@@ -1,24 +1,20 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { Geist, Geist_Mono } from "next/font/google";
+ import { Inter, Roboto_Mono } from "next/font/google";
 import {
     AlertTriangle,
-    ArrowUpRight,
     Calendar,
     Check,
     CheckCircle2,
     Circle,
-    Clock,
     DollarSign,
     FileText,
-    Filter,
     ShieldAlert,
     Users,
     ChevronDown,
     ChevronUp,
     ListTodo,
-    Link as LinkIcon,
     LayoutGrid,
     List as ListIcon,
     HeartHandshake,
@@ -28,12 +24,13 @@ import {
 } from 'lucide-react';
 
 // --- FONTS ---
-const geistSans = Geist({
+// Aliased to keep the original CSS variable names used in the UI
+const geistSans = Inter({
     variable: "--font-geist-sans",
     subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = Roboto_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
 });
@@ -249,7 +246,9 @@ const INITIAL_TASKS = [
 
 // --- COMPONENTS ---
 
-const StatusBadge = ({ priority, critical }) => {
+type Task = typeof INITIAL_TASKS[0];
+
+const StatusBadge = ({ priority, critical }: { priority: string, critical: boolean }) => {
     if (critical) {
         return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#2F3151] text-white uppercase tracking-wider"><ShieldAlert className="w-3 h-3 mr-1" /> Critique</span>;
     }
@@ -259,14 +258,14 @@ const StatusBadge = ({ priority, critical }) => {
     return <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[#FBF6E9] text-[#71728B] uppercase tracking-wider border border-[#A09BAD]/30">Normal</span>;
 };
 
-const StatCard = ({ icon: Icon, title, value, subtext, colorClass, delay }) => (
+const StatCard = ({ icon: Icon, title, value, subtext, colorClass, delay }: { icon: React.ElementType, title: string, value: string | number, subtext: string, colorClass: string, delay: number }) => (
     <div className="bg-white p-5 lg:p-6 rounded-2xl border border-[#A09BAD]/30 shadow-sm flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-default" style={{ animation: `fadeIn 0.5s ease-out ${delay}s backwards` }}>
         <div className={`p-3 lg:p-4 rounded-xl ${colorClass} text-white shadow-md flex-shrink-0`}>
             <Icon className="w-5 h-5 lg:w-6 lg:h-6" />
         </div>
         <div className="min-w-0 flex-1">
             <p className="text-xs font-bold text-[#71728B] uppercase tracking-wider mb-1 truncate">{title}</p>
-            <h3 className="text-2xl lg:text-3xl font-bold text-[#131427] tracking-tight truncate" title={value}>{value}</h3>
+            <h3 className="text-2xl lg:text-3xl font-bold text-[#131427] tracking-tight truncate" title={String(value)}>{value}</h3>
             <p className="text-xs text-[#51536D] mt-1 font-medium truncate">{subtext}</p>
         </div>
     </div>
@@ -279,14 +278,14 @@ export default function Home() {
     const [viewMode, setViewMode] = useState('list');
     const [filterStatus, setFilterStatus] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [draggedTaskId, setDraggedTaskId] = useState(null); // For Drag & Drop
+    const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null); // For Drag & Drop
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => { setMounted(true); }, []);
 
     // --- LOGIC ACTIONS ---
 
-    const toggleTaskOwner = (id, person) => {
+    const toggleTaskOwner = (id: string, person: string) => {
         setTasks(prev => prev.map(task => {
             if (task.id !== id) return task;
             const newState = { ...task };
@@ -302,7 +301,7 @@ export default function Home() {
         }));
     };
 
-    const toggleSubtask = (taskId, subtaskIndex) => {
+    const toggleSubtask = (taskId: string, subtaskIndex: number) => {
         setTasks(prev => prev.map(task => {
             if (task.id !== taskId) return task;
             const newSubtasks = [...task.subtasks];
@@ -311,29 +310,29 @@ export default function Home() {
         }));
     };
 
-    const toggleDetails = (id) => {
+    const toggleDetails = (id: string) => {
         setTasks(prev => prev.map(t => t.id === id ? { ...t, expanded: !t.expanded } : t));
     };
 
     // --- DRAG & DROP HANDLERS ---
 
-    const handleDragStart = (e, taskId) => {
+    const handleDragStart = (e: React.DragEvent, taskId: string) => {
         setDraggedTaskId(taskId);
         e.dataTransfer.effectAllowed = 'move';
         // Add a slight transparency to the dragged item visual
-        e.target.style.opacity = '0.5';
+        (e.target as HTMLElement).style.opacity = '0.5';
     };
 
-    const handleDragEnd = (e) => {
-        e.target.style.opacity = '1';
+    const handleDragEnd = (e: React.DragEvent) => {
+        (e.target as HTMLElement).style.opacity = '1';
         setDraggedTaskId(null);
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault(); // Necessary to allow dropping
     };
 
-    const handleDrop = (e, targetStatus) => {
+    const handleDrop = (e: React.DragEvent, targetStatus: string) => {
         e.preventDefault();
         if (!draggedTaskId) return;
 
@@ -360,17 +359,16 @@ export default function Home() {
 
     // --- CALCULATIONS ---
 
-    const getDaysRemaining = (deadline) => {
+    const getDaysRemaining = (deadline: string) => {
         const today = new Date();
         const target = new Date(deadline);
-        const diffTime = target - today;
+        const diffTime = Number(target) - Number(today);
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     };
 
-    const formatCurrency = (amount) => {
+    const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XAF', maximumFractionDigits: 0 }).format(amount);
     };
-
     const stats = useMemo(() => {
         const total = tasks.length;
         const completedTasks = tasks.filter(t => t.ariane && t.pavel);
@@ -410,7 +408,7 @@ export default function Home() {
     }, [tasks, searchQuery, filterStatus]);
 
     const kanbanColumns = useMemo(() => {
-        const todo = [], doing = [], done = [];
+        const todo: Task[] = [], doing: Task[] = [], done: Task[] = [];
 
         filteredTasks.forEach(task => {
             const isFullyDone = task.ariane && task.pavel;
@@ -449,7 +447,9 @@ export default function Home() {
                         <div className="bg-[#131427] p-6 rounded-2xl border border-[#51536D]/50 shadow-2xl min-w-[180px]">
                             <div className="flex items-baseline gap-1"><span className="text-4xl font-bold text-white">{stats.progress}</span><span className="text-xl text-[#A09BAD]">%</span></div>
                             <div className="text-xs text-[#71728B] font-bold uppercase mt-2 tracking-wide">Global</div>
-                            <div className="w-full bg-[#2F3151] h-2 mt-4 rounded-full overflow-hidden"><div className="bg-white h-full transition-all duration-1000 ease-out" style={{ width: `${stats.progress}%` }}></div></div>
+                            <div className="w-full bg-[#2F3151] h-2 mt-4 rounded-full overflow-hidden">
+                                <div className="bg-white h-full transition-all duration-1000 ease-out" style={{ width: `${stats.progress}%` }}></div>
+                            </div>
                         </div>
                     </div>
                 </div>
