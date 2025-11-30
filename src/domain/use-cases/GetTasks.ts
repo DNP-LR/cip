@@ -2,7 +2,7 @@ import { Task } from '../entities/task';
 import { TaskRepository } from '../repositories/TaskRepository';
 
 export class GetTasksUseCase {
-  constructor(private taskRepository: TaskRepository) {}
+  constructor(private readonly taskRepository: TaskRepository) {}
 
   async execute(): Promise<Task[]> {
     return this.taskRepository.getTasks();
