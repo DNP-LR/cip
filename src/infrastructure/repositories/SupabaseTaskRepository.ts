@@ -5,7 +5,8 @@ import {supabase} from "@/infrastructure/data-sources/supabase";
 
 export class SupabaseTaskRepository implements TaskRepository {
     async addTask(task: Omit<Task, 'id'>): Promise<Task> {
-        const taskWithId = { ...task, id: uuidv4() };
+        const { isDateTentative, ...taskToInsert } = task;
+        const taskWithId = { ...taskToInsert, id: uuidv4() };
         const { data, error } = await supabase
             .from('tasks')
             .insert([taskWithId])
@@ -25,9 +26,10 @@ export class SupabaseTaskRepository implements TaskRepository {
   }
 
   async updateTask(taskId: string, updates: Partial<Omit<Task, 'id'>>): Promise<Task> {
+    const { isDateTentative, ...taskToUpdate } = updates;
     const { data, error } = await supabase
       .from('tasks')
-      .update(updates)
+      .update(taskToUpdate)
       .eq('id', taskId)
       .select();
     if (error) {

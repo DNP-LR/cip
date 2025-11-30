@@ -18,16 +18,29 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
     const [priority, setPriority] = useState<'normal' | 'high' | 'critical'>('normal');
     const [critical, setCritical] = useState(false);
     const [shared, setShared] = useState(false);
-    const [isDateTentative, setIsDateTentative] = useState(false);
     const [cost, setCost] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [subtaskInput, setSubtaskInput] = useState('');
+    const [subtasks, setSubtasks] = useState<{ text: string; completed: boolean }[]>([]);
 
     useEffect(() => {
         if (!isOpen) {
             setError('');
         }
     }, [isOpen]);
+
+    const handleSubtaskAdd = () => {
+        if (subtaskInput.trim()) {
+            setSubtasks([...subtasks, {text: subtaskInput, completed: false}]);
+            setSubtaskInput('');
+        }
+    };
+
+    const handleSubtaskRemove = (index: number) => {
+        setSubtasks(subtasks.filter((_, i) => i !== index));
+    };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,25 +54,24 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
                 deadline,
                 priority,
                 critical,
-                shared,
-                isDateTentative,
-                cost,
-                subtasks: [],
-                ariane: false,
-                pavel: false,
-                expanded: false,
-            });
-            onTaskAdded(newTask);
-
-            // Reset form
-            setTitle('');
-            setDescription('');
-            setDetails('');
-            setDeadline('');
-            setCost(0);
-            setIsDateTentative(false);
-            onClose();
-        } catch (error) {
+                                shared,
+                                cost,
+                                subtasks,
+                                ariane: false,
+                                pavel: false,
+                                expanded: false,
+                            });
+                            onTaskAdded(newTask);
+                
+                            // Reset form
+                            setTitle('');
+                            setDescription('');
+                            setDetails('');
+                            setDeadline('');
+                            setCost(0);
+                            setSubtasks([]);
+                            setSubtaskInput('');
+                            onClose();        } catch (error) {
             setError("Failed to add task. Please check the console for details.");
             console.error("Failed to add task", error);
         } finally {
@@ -125,6 +137,42 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
                         />
                     </div>
 
+                    <div>
+                        <label className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Sous-tâches</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={subtaskInput}
+                                onChange={(e) => setSubtaskInput(e.target.value)}
+                                className="w-full rounded-lg border border-[#A09BAD]/30 px-3 py-2 text-[#131427] focus:ring-2 focus:ring-[#2F3151] outline-none"
+                                placeholder="Ajouter une sous-tâche..."
+                            />
+                            <button
+                                type="button"
+                                onClick={handleSubtaskAdd}
+                                className="px-4 py-2 text-sm font-bold text-white bg-[#51536D] hover:bg-[#2F3151] rounded-lg"
+                            >
+                                Ajouter
+                            </button>
+                        </div>
+                        <ul className="mt-2 space-y-1">
+                            {subtasks.map((subtask, index) => (
+                                <li key={index}
+                                    className="flex items-center justify-between bg-gray-50 p-2 rounded-lg">
+                                    <span className="text-sm text-[#131427]">{subtask.text}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleSubtaskRemove(index)}
+                                        className="text-red-500 hover:text-red-700 text-xs font-bold"
+                                    >
+                                        Supprimer
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Date
@@ -182,16 +230,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
                                 className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
                             />
                             <span className="text-sm font-medium text-[#131427]">Dossier Partagé</span>
-                        </label>
-
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={isDateTentative}
-                                onChange={(e) => setIsDateTentative(e.target.checked)}
-                                className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
-                            />
-                            <span className="text-sm font-medium text-[#131427]">Date Estimée</span>
                         </label>
                     </div>
 

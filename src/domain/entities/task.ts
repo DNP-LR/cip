@@ -17,5 +17,4 @@ export interface Task {
   ariane: boolean;
   pavel: boolean;
   expanded: boolean;
-  isDateTentative: boolean;
 }

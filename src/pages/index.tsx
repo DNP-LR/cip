@@ -125,6 +125,7 @@ export default function Home() {
                                 handleDrop(draggedTaskId, status);
                             }
                         }}
+                        toggleSubtask={toggleSubtask}
                     />
                 ) : (
                     <ListView

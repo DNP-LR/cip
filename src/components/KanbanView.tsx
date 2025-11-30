@@ -28,6 +28,7 @@ interface KanbanViewProps {
     handleDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
     handleDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
     handleDrop: (e: React.DragEvent<HTMLDivElement>, targetStatus: 'todo' | 'doing' | 'done') => void;
+    toggleSubtask: (taskId: string, subtaskIndex: number) => void;
 }
 
 const formatCurrency = (amount: number): string => {
@@ -38,7 +39,7 @@ const formatCurrency = (amount: number): string => {
     }).format(amount);
 };
 
-const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleDragEnd, handleDragOver, handleDrop }) => {
+const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleDragEnd, handleDragOver, handleDrop, toggleSubtask }) => {
     const kanbanColumns = React.useMemo(() => {
         const todo: Task[] = [], doing: Task[] = [], done: Task[] = [];
 
@@ -110,7 +111,6 @@ const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleD
                                                 <div
                                                     className={`text-sm font-medium flex items-center gap-2 ${isLate ? 'text-red-600' : 'text-[#51536D]'}`}>
                                                     <Calendar className="w-4 h-4"/>
-                                                    {task.isDateTentative ? 'Environ ' : ''}
                                                     {new Date(task.deadline).toLocaleDateString('fr-FR', {
                                                         day: 'numeric',
                                                         month: 'short',
@@ -130,6 +130,44 @@ const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleD
                                                 className="bg-[#51536D] h-full transition-all duration-300"
                                                 style={{width: `${(task.subtasks.filter(s => s.completed).length / task.subtasks.length) * 100}%`}}
                                             ></div>
+                                        </div>
+                                        <div className="flex justify-between items-center mt-1">
+                                            <span
+                                                className="text-[10px] font-bold text-[#A09BAD]">{task.subtasks.filter(s => s.completed).length}/{task.subtasks.length}</span>
+                                            <button
+                                                className="text-[10px] font-bold text-[#A09BAD] hover:text-[#2F3151]"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const currentTarget = e.currentTarget as HTMLElement;
+                                                    const parent = currentTarget.closest('.bg-white');
+                                                    if (parent) {
+                                                        const subtasksList = parent.querySelector('.subtasks-list') as HTMLElement;
+                                                        if (subtasksList) {
+                                                            subtasksList.classList.toggle('hidden');
+                                                        }
+                                                    }
+                                                }}
+                                            >
+                                                Voir
+                                            </button>
+                                        </div>
+                                        <div className="subtasks-list hidden mt-2 space-y-1">
+                                            {task.subtasks.map((subtask, index) => (
+                                                <div key={index}
+                                                     className="flex items-center gap-2 p-1 rounded hover:bg-gray-50">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={subtask.completed}
+                                                        onChange={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleSubtask(task.id, index);
+                                                        }}
+                                                        className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
+                                                    />
+                                                    <span
+                                                        className={`text-xs ${subtask.completed ? 'line-through text-gray-400' : 'text-[#131427]'}`}>{subtask.text}</span>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}

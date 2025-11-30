@@ -142,13 +142,13 @@ const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubta
                                         <div
                                             className={`text-lg font-bold flex items-center lg:justify-end gap-2 ${isLate ? 'text-red-600' : 'text-[#131427]'}`}>
                                             <Calendar className="w-4 h-4"/>
-                                            {task.isDateTentative ? 'Environ ' : ''}{new Date(task.deadline).toLocaleDateString('fr-FR', {
+                                            {new Date(task.deadline).toLocaleDateString('fr-FR', {
                                             day: 'numeric',
                                             month: 'short',
                                             year: 'numeric'
                                         })}
                                         </div>
-                                        {!isComplete && !task.isDateTentative && <span
+                                        {!isComplete && <span
                                             className={`inline-block mt-2 px-3 py-1 rounded-md text-xs font-bold ${isLate ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-[#FBF6E9] text-[#71728B]'}`}>{isLate ? 'En retard !' : `${daysLeft} jours restants`}</span>}
                                     </div>
 									<div className="space-y-4">
