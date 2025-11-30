@@ -1,6 +1,6 @@
 import React from 'react';
 import { Task } from '@/domain/entities/task';
-import { GripVertical, ShieldAlert, AlertTriangle } from 'lucide-react';
+import { GripVertical, ShieldAlert, AlertTriangle, Calendar } from 'lucide-react';
 
 interface StatusBadgeProps {
     priority: 'normal' | 'high' | 'critical';
@@ -97,6 +97,30 @@ const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleD
 
                                 {task.cost > 0 && <div
                                     className="text-[10px] font-semibold text-[#51536D] bg-gray-50 inline-block px-2 py-0.5 rounded mb-2">{formatCurrency(task.cost)}</div>}
+
+                                {task.deadline && (
+                                    <div className="mt-2 mb-3">
+                                        {(() => {
+                                            const deadlineDate = new Date(task.deadline);
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+                                            const isLate = deadlineDate < today;
+
+                                            return (
+                                                <div
+                                                    className={`text-sm font-medium flex items-center gap-2 ${isLate ? 'text-red-600' : 'text-[#51536D]'}`}>
+                                                    <Calendar className="w-4 h-4"/>
+                                                    {task.isDateTentative ? 'Environ ' : ''}
+                                                    {new Date(task.deadline).toLocaleDateString('fr-FR', {
+                                                        day: 'numeric',
+                                                        month: 'short',
+                                                        year: 'numeric'
+                                                    })}
+                                                </div>
+                                            );
+                                        })()}
+                                    </div>
+                                )}
 
                                 {task.subtasks.length > 0 && (
                                     <div className="mb-3">

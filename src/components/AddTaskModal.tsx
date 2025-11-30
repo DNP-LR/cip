@@ -18,6 +18,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
     const [priority, setPriority] = useState<'normal' | 'high' | 'critical'>('normal');
     const [critical, setCritical] = useState(false);
     const [shared, setShared] = useState(false);
+    const [isDateTentative, setIsDateTentative] = useState(false);
     const [cost, setCost] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -41,6 +42,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
                 priority,
                 critical,
                 shared,
+                isDateTentative,
                 cost,
                 subtasks: [],
                 ariane: false,
@@ -55,6 +57,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
             setDetails('');
             setDeadline('');
             setCost(0);
+            setIsDateTentative(false);
             onClose();
         } catch (error) {
             setError("Failed to add task. Please check the console for details.");
@@ -179,6 +182,16 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded
                                 className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
                             />
                             <span className="text-sm font-medium text-[#131427]">Dossier Partagé</span>
+                        </label>
+
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={isDateTentative}
+                                onChange={(e) => setIsDateTentative(e.target.checked)}
+                                className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
+                            />
+                            <span className="text-sm font-medium text-[#131427]">Date Estimée</span>
                         </label>
                     </div>
 
