@@ -1,150 +1,195 @@
-import React, { useState } from 'react';
-import { Task } from '@/interfaces/task';
+"use client";
+import React, {useState} from 'react';
+import {Task} from "@/domain/entities/task";
+import { AddTaskUseCase } from '@/domain/use-cases/AddTask';
 
 interface AddTaskModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddTask: (task: Omit<Task, 'id' | 'ariane' | 'pavel' | 'expanded' | 'subtasks'>) => void;
+    isOpen: boolean;
+    onClose: () => void;
+    onTaskAdded: (task: Task) => void;
+    addTaskUseCase: AddTaskUseCase;
 }
 
-const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [details, setDetails] = useState('');
-  const [deadline, setDeadline] = useState('');
-  const [priority, setPriority] = useState<'normal' | 'high' | 'critical'>('normal');
-  const [critical, setCritical] = useState(false);
-  const [shared, setShared] = useState(false);
-  const [cost, setCost] = useState(0);
-  const [isDateTentative, setIsDateTentative] = useState(false);
+const AddTaskModal: React.FC<AddTaskModalProps> = ({isOpen, onClose, onTaskAdded, addTaskUseCase}) => {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [details, setDetails] = useState('');
+    const [deadline, setDeadline] = useState('');
+    const [priority, setPriority] = useState<'normal' | 'high' | 'critical'>('normal');
+    const [critical, setCritical] = useState(false);
+    const [shared, setShared] = useState(false);
+    const [cost, setCost] = useState(0);
+    const [isDateTentative, setIsDateTentative] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onAddTask({
-      title,
-      description,
-      details,
-      deadline,
-      priority,
-      critical,
-      shared,
-      cost,
-      isDateTentative,
-    });
-    onClose();
-  };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const newTask = await addTaskUseCase.execute({
+                title,
+                description,
+                details,
+                deadline,
+                priority,
+                critical,
+                shared,
+                cost,
+                isDateTentative,
+                subtasks: [],
+                ariane: false,
+                pavel: false,
+                expanded: false,
+            });
+            onTaskAdded(newTask);
 
-  if (!isOpen) return null;
+            // Reset form
+            setTitle('');
+            setDescription('');
+            setDetails('');
+            setDeadline('');
+            setCost(0);
+            onClose();
+        } catch (error) {
+            console.error("Failed to add task", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">Add New Task</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Details</label>
-            <textarea
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Deadline</label>
-            <input
-              type="date"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Priority</label>
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value as 'normal' | 'high' | 'critical')}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            >
-              <option value="normal">Normal</option>
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Cost</label>
-            <input
-              type="number"
-              value={cost}
-              onChange={(e) => setCost(Number(e.target.value))}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              checked={critical}
-              onChange={(e) => setCritical(e.target.checked)}
-              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-            />
-            <label className="ml-2 block text-sm text-gray-900">Critical</label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              checked={shared}
-              onChange={(e) => setShared(e.target.checked)}
-              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-            />
-            <label className="ml-2 block text-sm text-gray-900">Shared</label>
-          </div>
-          <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              checked={isDateTentative}
-              onChange={(e) => setIsDateTentative(e.target.checked)}
-              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-            />
-            <label className="ml-2 block text-sm text-gray-900">Tentative Date</label>
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="mr-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Add Task
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-[#131427]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-[#A09BAD]/30">
+                <div className="bg-[#2F3151] px-6 py-4 border-b border-[#51536D]">
+                    <h2 className="text-xl font-bold text-white">Ajouter une Tâche</h2>
+                </div>
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                    <div>
+                        <label
+                            className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Titre</label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full rounded-lg border border-[#A09BAD]/30 px-3 py-2 text-[#131427] focus:ring-2 focus:ring-[#2F3151] outline-none"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label
+                            className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Description</label>
+                        <textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            className="w-full rounded-lg border border-[#A09BAD]/30 px-3 py-2 text-[#131427] focus:ring-2 focus:ring-[#2F3151] outline-none"
+                            rows={2}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Détails
+                            (Technique)</label>
+                        <textarea
+                            value={details}
+                            onChange={(e) => setDetails(e.target.value)}
+                            className="w-full rounded-lg border border-[#A09BAD]/30 px-3 py-2 text-[#131427] focus:ring-2 focus:ring-[#2F3151] outline-none text-sm"
+                            rows={2}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Date
+                                Limite</label>
+                            <input
+                                type="date"
+                                value={deadline}
+                                onChange={(e) => setDeadline(e.target.value)}
+                                className="w-full rounded-lg border border-[#A09BAD]/30 px-3 py-2 text-[#131427] focus:ring-2 focus:ring-[#2F3151] outline-none"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label
+                                className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Priorité</label>
+                            <select
+                                value={priority}
+                                onChange={(e) => setPriority(e.target.value as 'normal' | 'high' | 'critical')}
+                                className="w-full rounded-lg border border-[#A09BAD]/30 px-3 py-2 text-[#131427] focus:ring-2 focus:ring-[#2F3151] outline-none bg-white"
+                            >
+                                <option value="normal">Normal</option>
+                                <option value="high">Important</option>
+                                <option value="critical">Critique</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-1">Coût
+                            Estimé (FCFA)</label>
+                        <input
+                            type="number"
+                            value={cost}
+                            onChange={(e) => setCost(Number(e.target.value))}
+                            className="w-full rounded-lg border border-[#A09BAD]/30 px-3 py-2 text-[#131427] focus:ring-2 focus:ring-[#2F3151] outline-none"
+                        />
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 pt-2">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={critical}
+                                onChange={(e) => setCritical(e.target.checked)}
+                                className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
+                            />
+                            <span className="text-sm font-medium text-[#131427]">Marquer Critique</span>
+                        </label>
+
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={shared}
+                                onChange={(e) => setShared(e.target.checked)}
+                                className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
+                            />
+                            <span className="text-sm font-medium text-[#131427]">Dossier Partagé</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={isDateTentative}
+                                onChange={(e) => setIsDateTentative(e.target.checked)}
+                                className="w-4 h-4 text-[#2F3151] rounded border-gray-300 focus:ring-[#2F3151]"
+                            />
+                            <span className="text-sm font-medium text-[#131427]">Date Tentative</span>
+                        </label>
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            disabled={loading}
+                            className="px-4 py-2 text-sm font-bold text-[#71728B] hover:bg-[#FBF6E9] rounded-lg transition-colors"
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="px-4 py-2 text-sm font-bold text-white bg-[#2F3151] hover:bg-[#131427] rounded-lg shadow transition-all flex items-center"
+                        >
+                            {loading ? 'Ajout...' : 'Créer la Tâche'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 };
 
 export default AddTaskModal;
