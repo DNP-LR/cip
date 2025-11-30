@@ -14,7 +14,6 @@ export interface Task {
   critical: boolean;
   shared: boolean;
   cost: number;
-  isDateTentative?: boolean;
   ariane: boolean;
   pavel: boolean;
   expanded: boolean;

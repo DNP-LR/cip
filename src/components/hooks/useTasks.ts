@@ -9,26 +9,26 @@ export const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const taskRepository = new SupabaseTaskRepository();
-  const getTasksUseCase = new GetTasksUseCase(taskRepository);
-  const addTaskUseCase = new AddTaskUseCase(taskRepository);
-  const updateTaskUseCase = new UpdateTaskUseCase(taskRepository);
+  const addTaskUseCase = new AddTaskUseCase(new SupabaseTaskRepository());
+  const updateTaskUseCase = new UpdateTaskUseCase(new SupabaseTaskRepository());
 
   useEffect(() => {
+    const taskRepository = new SupabaseTaskRepository();
+    const getTasksUseCase = new GetTasksUseCase(taskRepository);
+    const fetchTasks = async () => {
+      try {
+        setLoading(true);
+        const fetchedTasks = await getTasksUseCase.execute();
+        setTasks(fetchedTasks);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchTasks();
   }, []);
-
-  const fetchTasks = async () => {
-    try {
-      setLoading(true);
-      const fetchedTasks = await getTasksUseCase.execute();
-      setTasks(fetchedTasks);
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const addTask = async (task: Omit<Task, 'id'>) => {
     const newTask = await addTaskUseCase.execute(task);
