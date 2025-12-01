@@ -42,6 +42,7 @@ export default function Home() {
     const [viewMode, setViewMode] = useState('list');
     const [filterStatus, setFilterStatus] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [sortOption, setSortOption] = useState('default');
     const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -88,7 +89,7 @@ export default function Home() {
     };
 
     const filteredTasks = useMemo(() => {
-        return tasks.filter(task => {
+        let result = tasks.filter(task => {
             const matchesSearch =
                 task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 task.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -100,7 +101,16 @@ export default function Home() {
 
             return matchesSearch && matchesFilter;
         });
-    }, [tasks, searchQuery, filterStatus]);
+
+        // Apply sorting
+        if (sortOption === 'date-asc') {
+            result = result.sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
+        } else if (sortOption === 'date-desc') {
+            result = result.sort((a, b) => new Date(b.deadline).getTime() - new Date(a.deadline).getTime());
+        }
+
+        return result;
+    }, [tasks, searchQuery, filterStatus, sortOption]);
 
     if (!mounted || loading) {
         return (
@@ -128,6 +138,8 @@ export default function Home() {
                     setViewMode={setViewMode}
                     filterStatus={filterStatus}
                     setFilterStatus={setFilterStatus}
+                    sortOption={sortOption}
+                    setSortOption={setSortOption}
                 />
 
                 {viewMode === 'kanban' ? (

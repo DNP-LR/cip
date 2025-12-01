@@ -8,6 +8,8 @@ interface ControlsProps {
     setViewMode: (mode: string) => void;
     filterStatus: string;
     setFilterStatus: (status: string) => void;
+    sortOption: string;
+    setSortOption: (option: string) => void;
 }
 
 const Controls: React.FC<ControlsProps> = ({
@@ -18,6 +20,8 @@ const Controls: React.FC<ControlsProps> = ({
     setViewMode,
     filterStatus,
     setFilterStatus,
+    sortOption,
+    setSortOption,
 }) => (
     <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
         <div className="relative w-full sm:w-64 md:w-80">
@@ -65,6 +69,16 @@ const Controls: React.FC<ControlsProps> = ({
                 <option value="incomplete">À Faire</option>
                 <option value="complete">Terminé</option>
                 <option value="critical">Critique Uniquement</option>
+            </select>
+
+            <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                className="px-4 py-2.5 rounded-xl border border-[#A09BAD]/20 shadow-sm bg-white text-[#71728B] font-bold text-sm focus:outline-none cursor-pointer w-full sm:w-auto"
+            >
+                <option value="default">Tri par défaut</option>
+                <option value="date-asc">Date croissante</option>
+                <option value="date-desc">Date décroissante</option>
             </select>
         </div>
     </div>

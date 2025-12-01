@@ -118,11 +118,20 @@ export const useTasks = () => {
     return {total, completed, critical, totalBudget, spentAmount, fundsRequired, progress};
   }, [tasks]);
 
+  const sortByDeadline = (taskList: Task[], order: 'asc' | 'desc' = 'asc'): Task[] => {
+    return [...taskList].sort((a, b) => {
+      const dateA = new Date(a.deadline).getTime();
+      const dateB = new Date(b.deadline).getTime();
+      return order === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+  };
+
   return {
     tasks,
     loading,
     addTask,
     editTask,
+    sortByDeadline,
     toggleTaskOwner,
     toggleSubtask,
     toggleDetails,
