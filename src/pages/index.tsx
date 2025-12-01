@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { Inter, Roboto_Mono } from "next/font/google";
 import { Task } from '@/domain/entities/task';
 import AddTaskModal from '@/components/AddTaskModal';
+import EditTaskModal from '@/components/EditTaskModal';
 import { useTasks } from '@/components/hooks/useTasks';
 import Header from '@/components/Header';
 import StatCards from '@/components/StatCards';
@@ -12,6 +13,7 @@ import KanbanView from '@/components/KanbanView';
 import ListView from '@/components/ListView';
 import { FileText } from 'lucide-react';
 import { AddTaskUseCase } from '@/domain/use-cases/AddTask';
+import { UpdateTaskUseCase } from '@/domain/use-cases/UpdateTask';
 import { SupabaseTaskRepository } from '@/infrastructure/repositories/SupabaseTaskRepository';
 
 const geistSans = Inter({
@@ -25,15 +27,16 @@ const geistMono = Roboto_Mono({
 });
 
 export default function Home() {
-    const { 
-        tasks, 
-        loading, 
-        addTask, 
+    const {
+        tasks,
+        loading,
+        addTask,
+        editTask,
         toggleTaskOwner,
         toggleSubtask,
         toggleDetails,
         handleDrop,
-        stats 
+        stats
     } = useTasks();
     
     const [viewMode, setViewMode] = useState('list');
@@ -42,9 +45,12 @@ export default function Home() {
     const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [currentTask, setCurrentTask] = useState<Task | null>(null);
+
     const taskRepository = new SupabaseTaskRepository();
     const addTaskUseCase = new AddTaskUseCase(taskRepository);
+    const updateTaskUseCase = new UpdateTaskUseCase(taskRepository);
 
     React.useEffect(() => {
         setMounted(true);
@@ -52,6 +58,16 @@ export default function Home() {
 
     const handleTaskAdded = (newTask: Task) => {
         addTask(newTask);
+    };
+
+    const handleTaskUpdated = (updatedTask: Task) => {
+        // Update the task in the local state via the hook
+        setCurrentTask(null);
+    };
+
+    const handleEditClick = (task: Task) => {
+        setCurrentTask(task);
+        setIsEditModalOpen(true);
     };
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, taskId: string) => {
@@ -126,6 +142,7 @@ export default function Home() {
                             }
                         }}
                         toggleSubtask={toggleSubtask}
+                        onEditClick={handleEditClick}
                     />
                 ) : (
                     <ListView
@@ -133,6 +150,7 @@ export default function Home() {
                         toggleTaskOwner={toggleTaskOwner}
                         toggleSubtask={toggleSubtask}
                         toggleDetails={toggleDetails}
+                        onEditClick={handleEditClick}
                     />
                 )}
 
@@ -151,6 +169,14 @@ export default function Home() {
                 onClose={() => setIsAddModalOpen(false)}
                 onTaskAdded={handleTaskAdded}
                 addTaskUseCase={addTaskUseCase}
+            />
+
+            <EditTaskModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                task={currentTask}
+                onTaskUpdated={handleTaskUpdated}
+                onUpdateTask={editTask}
             />
 
             <style jsx global>{`

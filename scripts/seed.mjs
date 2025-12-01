@@ -25,7 +25,7 @@ const INITIAL_TASKS = [
         priority: 'normal',
         critical: false,
         shared: true,
-        cost: 220000, // 110k * 2
+        cost: 220000,
         isDateTentative: false
     },
     {
@@ -209,7 +209,7 @@ const INITIAL_TASKS = [
         priority: 'high',
         critical: true,
         shared: true,
-        cost: 480000 // Approx for two
+        cost: 480000
     },
     {
         id: '14',

@@ -12,6 +12,7 @@ import {
     FileText,
     HeartHandshake,
     ListTodo,
+    Pencil,
     ShieldAlert,
     Users
 } from 'lucide-react';
@@ -41,6 +42,7 @@ interface ListViewProps {
     toggleTaskOwner: (id: string, person: 'ariane' | 'pavel' | 'both') => void;
     toggleSubtask: (taskId: string, subtaskIndex: number) => void;
     toggleDetails: (id: string) => void;
+    onEditClick: (task: Task) => void;
 }
 
 const getDaysRemaining = (deadline: string): number => {
@@ -58,7 +60,7 @@ const formatCurrency = (amount: number): string => {
     }).format(amount);
 };
 
-const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubtask, toggleDetails }) => (
+const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubtask, toggleDetails, onEditClick }) => (
     <div className="space-y-8 animate-fadeIn">
         {tasks.length === 0 ? (
             <div className="text-center py-20 text-[#A09BAD] font-bold">Aucune tâche ne correspond à
@@ -85,7 +87,16 @@ const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubta
                                                 className="flex items-center text-xs font-bold text-[#2F3151] bg-[#FBF6E9] px-2 py-1 rounded"><HeartHandshake
                                                 className="w-3 h-3 mr-1"/> Union de Fait</span>}
                                         </div>
-                                        <h3 className={`text-xl font-bold ${isComplete ? 'text-[#A09BAD] line-through' : 'text-[#131427]'}`}>{task.title}</h3>
+                                        <div className="flex items-center justify-between">
+                                            <h3 className={`text-xl font-bold ${isComplete ? 'text-[#A09BAD] line-through' : 'text-[#131427]'}`}>{task.title}</h3>
+                                            <button
+                                                onClick={() => onEditClick(task)}
+                                                className="text-[#A09BAD] hover:text-[#2F3151] p-1 rounded-full hover:bg-[#FBF6E9] transition-colors"
+                                                aria-label="Modifier la tâche"
+                                            >
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </div>
                                     <p className="text-[#51536D] leading-relaxed">{task.description}</p>
 

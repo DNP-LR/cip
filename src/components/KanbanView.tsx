@@ -1,6 +1,6 @@
 import React from 'react';
 import { Task } from '@/domain/entities/task';
-import { GripVertical, ShieldAlert, AlertTriangle, Calendar } from 'lucide-react';
+import { GripVertical, ShieldAlert, AlertTriangle, Calendar, Pencil } from 'lucide-react';
 
 interface StatusBadgeProps {
     priority: 'normal' | 'high' | 'critical';
@@ -29,6 +29,7 @@ interface KanbanViewProps {
     handleDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
     handleDrop: (e: React.DragEvent<HTMLDivElement>, targetStatus: 'todo' | 'doing' | 'done') => void;
     toggleSubtask: (taskId: string, subtaskIndex: number) => void;
+    onEditClick: (task: Task) => void;
 }
 
 const formatCurrency = (amount: number): string => {
@@ -39,7 +40,7 @@ const formatCurrency = (amount: number): string => {
     }).format(amount);
 };
 
-const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleDragEnd, handleDragOver, handleDrop, toggleSubtask }) => {
+const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleDragEnd, handleDragOver, handleDrop, toggleSubtask, onEditClick }) => {
     const kanbanColumns = React.useMemo(() => {
         const todo: Task[] = [], doing: Task[] = [], done: Task[] = [];
 
@@ -92,7 +93,19 @@ const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleD
                                         <span
                                             className="text-[10px] font-bold text-[#A09BAD]">#{task.id}</span>
                                     </div>
-                                    <StatusBadge priority={task.priority} critical={task.critical}/>
+                                    <div className="flex gap-1">
+                                        <StatusBadge priority={task.priority} critical={task.critical}/>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onEditClick(task);
+                                            }}
+                                            className="text-[#A09BAD] hover:text-[#2F3151] p-1 rounded-full hover:bg-[#FBF6E9] transition-colors"
+                                            aria-label="Modifier la tâche"
+                                        >
+                                            <Pencil className="w-3 h-3" />
+                                        </button>
+                                    </div>
                                 </div>
                                 <h4 className="font-bold text-[#131427] text-sm mb-2 leading-tight">{task.title}</h4>
 

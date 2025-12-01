@@ -40,6 +40,12 @@ export const useTasks = () => {
     setTasks(prev => prev.map(t => t.id === taskId ? {...t, ...updates} : t));
     await updateTaskUseCase.execute(taskId, updates);
   };
+
+  const editTask = async (taskId: string, updates: Partial<Omit<Task, 'id'>>) => {
+    const updatedTask = await updateTaskUseCase.execute(taskId, updates);
+    setTasks(prev => prev.map(t => t.id === taskId ? updatedTask : t));
+    return updatedTask;
+  };
   
   const toggleTaskOwner = async (id: string, person: 'ariane' | 'pavel' | 'both') => {
     const task = tasks.find(t => t.id === id);
@@ -112,10 +118,11 @@ export const useTasks = () => {
     return {total, completed, critical, totalBudget, spentAmount, fundsRequired, progress};
   }, [tasks]);
 
-  return { 
-    tasks, 
-    loading, 
-    addTask, 
+  return {
+    tasks,
+    loading,
+    addTask,
+    editTask,
     toggleTaskOwner,
     toggleSubtask,
     toggleDetails,
