@@ -60,7 +60,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleD
     }, [tasks]);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 animate-fadeIn">
             {[
                 {id: 'todo', title: 'À Faire', items: kanbanColumns.todo, color: 'border-l-[#A09BAD]'},
                 {id: 'doing', title: 'En Cours', items: kanbanColumns.doing, color: 'border-l-[#51536D]'},
@@ -68,7 +68,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ tasks, handleDragStart, handleD
             ].map(col => (
                 <div
                     key={col.id}
-                    className="bg-[#FBF6E9]/50 rounded-2xl flex flex-col h-full min-h-[500px]"
+                    className="bg-[#FBF6E9]/50 rounded-2xl flex flex-col h-full min-h-[400px] sm:min-h-[500px]"
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, col.id as 'todo' | 'doing' | 'done')}
                 >

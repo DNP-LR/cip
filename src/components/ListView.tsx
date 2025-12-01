@@ -73,7 +73,7 @@ const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubta
                     <div key={task.id}
                          className={`group bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl ${isComplete ? 'border-[#A09BAD]/20 opacity-80' : task.critical ? 'border-l-[6px] border-l-[#2F3151]' : 'border-l-[6px] border-l-[#A09BAD]'}`}>
                         <div className="p-6 md:p-8">
-                            <div className="flex flex-col lg:flex-row gap-8">
+                            <div className="flex flex-col gap-6">
                                 <div className="flex-grow space-y-4 min-w-0">
                                     <div className="space-y-2">
                                         <div className="flex flex-wrap items-center gap-3">
@@ -87,9 +87,9 @@ const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubta
                                         </div>
                                         <h3 className={`text-xl font-bold ${isComplete ? 'text-[#A09BAD] line-through' : 'text-[#131427]'}`}>{task.title}</h3>
                                     </div>
-                                    <p className="text-[#51536D] leading-relaxed max-w-3xl">{task.description}</p>
+                                    <p className="text-[#51536D] leading-relaxed">{task.description}</p>
 
-                                    <div className="flex flex-wrap gap-3 pt-2">
+                                    <div className="flex flex-wrap gap-2 pt-2">
                                         {task.cost > 0 && <span
                                             className={`inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-lg border border-[#A09BAD]/20 ${isComplete ? 'bg-[#FBF6E9] text-[#A09BAD] line-through' : 'bg-[#131427] text-white'}`}><DollarSign
                                             className="w-3 h-3 mr-1"/>{formatCurrency(task.cost)}</span>}
@@ -99,7 +99,7 @@ const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubta
                                     </div>
 
                                     <div
-                                        className="mt-6 bg-[#FBF6E9]/50 rounded-xl p-4 md:p-6 border border-[#A09BAD]/10">
+                                        className="mt-4 bg-[#FBF6E9]/50 rounded-xl p-4 border border-[#A09BAD]/10">
                                         <div
                                             className="flex items-center justify-between cursor-pointer mb-4"
                                             onClick={() => toggleDetails(task.id)}>
@@ -135,12 +135,12 @@ const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubta
                                 </div>
 
                                 <div
-                                    className="flex flex-col justify-between min-w-[260px] border-t lg:border-t-0 lg:border-l border-[#A09BAD]/20 pt-6 lg:pt-0 lg:pl-8">
-                                    <div className="mb-6 lg:text-right">
+                                    className="flex flex-col gap-6 pt-4 border-t border-[#A09BAD]/20">
+                                    <div className="mb-4">
                                         <span
                                             className="text-xs font-bold text-[#A09BAD] uppercase tracking-wider block mb-1">Date Limite</span>
                                         <div
-                                            className={`text-lg font-bold flex items-center lg:justify-end gap-2 ${isLate ? 'text-red-600' : 'text-[#131427]'}`}>
+                                            className={`text-lg font-bold flex items-center gap-2 ${isLate ? 'text-red-600' : 'text-[#131427]'}`}>
                                             <Calendar className="w-4 h-4"/>
                                             {new Date(task.deadline).toLocaleDateString('fr-FR', {
                                             day: 'numeric',
@@ -153,7 +153,7 @@ const ListView: React.FC<ListViewProps> = ({ tasks, toggleTaskOwner, toggleSubta
                                     </div>
 									<div className="space-y-4">
                                         <div
-                                            className="text-xs font-bold text-[#A09BAD] uppercase tracking-wider lg:text-right mb-2">Responsables
+                                            className="text-xs font-bold text-[#A09BAD] uppercase tracking-wider mb-2">Responsables
                                         </div>
                                         {task.shared ? (
                                             <button onClick={() => toggleTaskOwner(task.id, 'both')}

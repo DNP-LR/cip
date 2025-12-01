@@ -99,10 +99,10 @@ export default function Home() {
 
     return (
         <div
-            className={`${geistSans.variable} ${geistMono.variable} font-sans min-h-screen bg-[#FBF6E9] pb-24 text-[#131427]`}>
+            className={`${geistSans.variable} ${geistMono.variable} font-sans min-h-screen bg-[#FBF6E9] pb-16 sm:pb-24 text-[#131427]`}>
             <Header progress={stats.progress} />
 
-            <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-24 relative z-20">
+            <div className="max-w-7xl mx-auto px-4 -mt-24 relative z-20">
                 <StatCards stats={stats} />
                 <Controls
                     searchQuery={searchQuery}
@@ -136,12 +136,12 @@ export default function Home() {
                     />
                 )}
 
-                <div className="mt-20 border-t border-[#A09BAD]/30 pt-10 pb-10 text-center">
+                <div className="mt-8 sm:mt-20 border-t border-[#A09BAD]/30 pt-6 pb-6 text-center">
                     <a href="https://justforcanada.com/fr/immigrer/entree-express/guide/documents-justificatifs/"
                        target="_blank" rel="noreferrer"
-                       className="inline-flex items-center gap-2 text-[#2F3151] font-bold text-sm hover:underline hover:text-[#51536D] cursor-pointer"><FileText
+                       className="inline-flex items-center gap-2 text-[#2F3151] font-bold text-xs sm:text-sm hover:underline hover:text-[#51536D] cursor-pointer"><FileText
                         className="w-4 h-4"/> Accéder au Guide Officiel IRCC</a>
-                    <p className="text-[#71728B] text-xs mt-4 font-medium tracking-wide">DESIGNED FOR ARIANE & PAVEL •
+                    <p className="text-[#71728B] text-xs mt-3 font-medium tracking-wide">DESIGNED FOR ARIANE & PAVEL •
                         MIS À JOUR LE {new Date().toLocaleDateString('fr-FR').toUpperCase()}</p>
                 </div>
             </div>

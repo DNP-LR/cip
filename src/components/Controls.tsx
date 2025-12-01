@@ -19,8 +19,8 @@ const Controls: React.FC<ControlsProps> = ({
     filterStatus,
     setFilterStatus,
 }) => (
-    <div className="flex flex-col lg:flex-row justify-between items-center mb-8 gap-4">
-        <div className="relative w-full lg:w-96">
+    <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+        <div className="relative w-full sm:w-64 md:w-80">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 text-[#A09BAD]"/>
             </div>
@@ -33,24 +33,24 @@ const Controls: React.FC<ControlsProps> = ({
             />
         </div>
 
-        <div className="flex gap-4 w-full lg:w-auto">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#2F3151] text-white rounded-xl font-bold text-sm hover:bg-[#131427] transition-all shadow-sm"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2F3151] text-white rounded-xl font-bold text-sm hover:bg-[#131427] transition-all shadow-sm w-full sm:w-auto"
             >
                 <Plus className="w-4 h-4"/> Ajouter
             </button>
 
-            <div className="bg-white p-1 rounded-xl border border-[#A09BAD]/20 shadow-sm flex items-center">
+            <div className="bg-white p-1 rounded-xl border border-[#A09BAD]/20 shadow-sm flex items-center w-full sm:w-auto">
                 <button
                     onClick={() => setViewMode('list')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'list' ? 'bg-[#2F3151] text-white shadow' : 'text-[#71728B] hover:bg-[#FBF6E9]'}`}
+                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all flex-1 ${viewMode === 'list' ? 'bg-[#2F3151] text-white shadow' : 'text-[#71728B] hover:bg-[#FBF6E9]'}`}
                 >
                     <ListIcon className="w-4 h-4"/> Liste
                 </button>
                 <button
                     onClick={() => setViewMode('kanban')}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'kanban' ? 'bg-[#2F3151] text-white shadow' : 'text-[#71728B] hover:bg-[#FBF6E9]'}`}
+                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all flex-1 ${viewMode === 'kanban' ? 'bg-[#2F3151] text-white shadow' : 'text-[#71728B] hover:bg-[#FBF6E9]'}`}
                 >
                     <LayoutGrid className="w-4 h-4"/> Kanban
                 </button>
@@ -59,7 +59,7 @@ const Controls: React.FC<ControlsProps> = ({
             <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 rounded-xl border border-[#A09BAD]/20 shadow-sm bg-white text-[#71728B] font-bold text-sm focus:outline-none cursor-pointer"
+                className="px-4 py-2.5 rounded-xl border border-[#A09BAD]/20 shadow-sm bg-white text-[#71728B] font-bold text-sm focus:outline-none cursor-pointer w-full sm:w-auto"
             >
                 <option value="all">Tout Afficher</option>
                 <option value="incomplete">À Faire</option>
